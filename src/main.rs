@@ -1,4 +1,8 @@
+mod dnd;
+
 use iced::widget::{button, text, column, Column};
+
+use crate::dnd::*;
 
 pub fn main() -> iced::Result {
     iced::run(Counter::update, Counter::view)
@@ -27,7 +31,7 @@ impl Counter {
         }
     }
 
-    fn view(&self) -> Column<Message> {
+    fn view(&self) -> Column<'_, Message> {
         let increment = button("+").on_press(Message::Increment);
         let decrement = button("-").on_press(Message::Decrement);
         
