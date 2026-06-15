@@ -2,7 +2,7 @@ pub fn determine_modifier(ability_score: i8) -> i8 {
     if ability_score <= 0 {
         panic!("Ability score must be greater than 0");
     }
-    ability_score - 10 >> 1
+    (ability_score - 10) >> 1
 }
 
 #[cfg(test)]
