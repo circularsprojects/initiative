@@ -1,4 +1,4 @@
-use super::stats::Stats;
+use super::prelude::*;
 
 pub struct Character {
     pub name: String,
@@ -13,6 +13,6 @@ pub struct Character {
     pub armor_class: i16,
 
     pub stats: Stats,
-    // pub skills: Skills,
+    pub skills: Skills,
     pub proficiency_bonus: i16,
 }

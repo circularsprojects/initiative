@@ -3,14 +3,14 @@ use std::ops::Add;
 use rand::distr::Uniform;
 use rand::prelude::*;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Dice {
     pub sides: u16,
     pub amount: u16,
 }
 
 impl Dice {
-    pub fn new(sides: u16, amount: u16) -> Dice {
+    pub fn new(amount: u16, sides: u16) -> Dice {
         Dice { sides, amount }
     }
 
@@ -47,7 +47,7 @@ impl Add for Dice {
     }
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct CompoundDice {
     pub dice: Vec<Dice>
 }
@@ -106,22 +106,22 @@ mod tests {
     #[test]
     fn test_dice_string_representation() {
         assert_eq!(Dice::new(10, 10).to_string(), "10d10");
-        assert_eq!(Dice::new(6, 4).to_string(), "4d6");
-        assert_eq!(Dice::new(12, 2).to_string(), "2d12");
-        assert_eq!(Dice::new(20, 7).to_string(), "7d20");
-        assert_eq!(Dice::new(8, 9).to_string(), "9d8");
-        assert_eq!(Dice::new(4, 3).to_string(), "3d4");
+        assert_eq!(Dice::new(4, 6).to_string(), "4d6");
+        assert_eq!(Dice::new(2, 12).to_string(), "2d12");
+        assert_eq!(Dice::new(7, 20).to_string(), "7d20");
+        assert_eq!(Dice::new(9, 8).to_string(), "9d8");
+        assert_eq!(Dice::new(3, 4).to_string(), "3d4");
     }
 
     #[test]
     fn test_compound_dice_string_representation() {
-        let cm1 = Dice::new(6, 4) + Dice::new(12, 2);
+        let cm1 = Dice::new(4, 6) + Dice::new(2, 12);
         assert_eq!(cm1.to_string(), "2d12 + 4d6");
 
-        let cm2 = Dice::new(4, 4) + Dice::new(8, 3);
+        let cm2 = Dice::new(4, 4) + Dice::new(3, 8);
         assert_eq!(cm2.to_string(), "3d8 + 4d4");
 
-        let cm3 = Dice::new(10, 2) + Dice::new(4, 2);
+        let cm3 = Dice::new(2, 10) + Dice::new(2, 4);
         assert_eq!(cm3.to_string(), "2d10 + 2d4");
 
         let cm4 = cm1 + cm2.clone();

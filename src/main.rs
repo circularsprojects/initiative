@@ -36,7 +36,7 @@ impl State {
             Message::AmountChanged(amount) => { self.amount_input = amount; }
             Message::DiceRolled => {
                 if let Ok(sides) = self.sides_input.parse::<u16>() && let Ok(amount) = self.amount_input.parse::<u16>() {
-                    let dice = Dice::new(sides, amount);
+                    let dice = Dice::new(amount, sides);
                     self.dice_result = dice.roll().to_string();
                 } else {
                     self.dice_result = "invalid".to_string();
@@ -46,14 +46,14 @@ impl State {
     }
 
     fn view(&self) -> Column<'_, Message> {
-        let sides = text_input("sides", &self.sides_input).on_input(Message::SidesChanged);
         let amount = text_input("amount", &self.amount_input).on_input(Message::AmountChanged);
+        let sides = text_input("sides", &self.sides_input).on_input(Message::SidesChanged);
 
         let roll = button("roll").on_press(Message::DiceRolled);
         
         let result = text(&self.dice_result);
         
-        let interface = column![sides, amount, roll, result];
+        let interface = column![amount, sides, roll, result];
         
         interface
     }
