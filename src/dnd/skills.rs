@@ -1,9 +1,10 @@
-use super::stats::StatType;
+use super::stats::{Stat, StatType, Stats};
 
 #[derive(Debug, Clone)]
-pub struct Skill {
+pub struct Skill<'a> {
     skill_type: SkillType,
-    stat_type: StatType,
+    // arc mutex
+    stat: &'a Stat,
     proficiency: bool,
     expertise: bool,
     extra_bonus: i8,
@@ -20,10 +21,18 @@ impl Skill {
             extra_bonus: 0,
         }
     }
+
+    pub fn new_from_stat(skill_type: SkillType, stat: Stat) -> Skill {
+
+    }
 }
 
 #[derive(Debug, Clone)]
 pub enum SkillType {
+    // could have these as an enum that has the value of a Skill
+    // like enum Acrobatics is a Skill with stat type dex
+    // pub enum SkillType {
+    //   Acrobatics(StatType::Dexterity)
     Acrobatics,
     AnimalHandling,
     Arcana,

@@ -4,6 +4,11 @@ pub struct Character {
     pub name: String,
     // pub class: Class,
     // pub race: Race,
+    pub level: u8,
+
+    // pub inventory: Inventory,
+    // pub spells: Spells,
+    // pub spell_slots: SpellSlots,
 
     pub inspiration: bool,
     pub speed: i16,
@@ -14,5 +19,10 @@ pub struct Character {
 
     pub stats: Stats,
     pub skills: Skills,
-    pub proficiency_bonus: i16,
+}
+
+impl Character {
+    pub fn get_proficiency_bonus(&self) -> u8 {
+        (self.level as f32 / 4.0).ceil() as u8 + 1
+    }
 }

@@ -1,9 +1,9 @@
-use super::utils::determine_modifier;
+use crate::dnd::skills::Skills;
+use super::utils::determine_stat_modifier;
 
 #[derive(Debug, Clone)]
 pub struct Stat {
-    base: i8,
-    modifier: i8,
+    score: i8,
     stat: StatType,
     saving_throw_proficiency: bool,
 }
@@ -11,11 +11,14 @@ pub struct Stat {
 impl Stat {
     pub fn new(base: i8, stat: StatType, saving_throw_proficiency: bool) -> Self {
         Self {
-            base,
-            modifier: determine_modifier(base),
+            score: base,
             stat,
             saving_throw_proficiency,
         }
+    }
+    
+    pub fn get_modifier(&self) -> i8 {
+        determine_stat_modifier(self.score)
     }
 }
 
@@ -49,5 +52,11 @@ impl Default for Stats {
             wisdom: Stat::new(10, StatType::Wisdom, false),
             charisma: Stat::new(10, StatType::Charisma, false),
         }
+    }
+}
+
+impl Stats {
+    pub fn to_skills(&self) -> Skills {
+        
     }
 }
