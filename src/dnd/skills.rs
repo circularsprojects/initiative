@@ -1,30 +1,34 @@
+use std::sync::{Arc, Mutex};
 use super::stats::{Stat, StatType, Stats};
 
 #[derive(Debug, Clone)]
-pub struct Skill<'a> {
+pub struct Skill {
     skill_type: SkillType,
-    // arc mutex
-    stat: &'a Stat,
+    stat: Arc<Mutex<Stat>>,
+    // stat_type: StatType,
     proficiency: bool,
     expertise: bool,
     extra_bonus: i8,
 }
 
 impl Skill {
-    pub fn new(skill_type: SkillType, proficiency: bool, expertise: bool) -> Skill {
-        let stat_type = skill_type.get_stat();
+    pub fn new(skill_type: SkillType, stat: Arc<Mutex<Stat>>, proficiency: bool, expertise: bool) -> Skill {
         Skill {
             skill_type,
-            stat_type,
+            stat,
             proficiency,
             expertise,
             extra_bonus: 0,
         }
     }
 
-    pub fn new_from_stat(skill_type: SkillType, stat: Stat) -> Skill {
-
+    pub fn get_modifier(&self) -> u8 {
+        
     }
+
+    // pub fn new_from_stat(skill_type: SkillType, stat: Stat) -> Skill {
+    //
+    // }
 }
 
 #[derive(Debug, Clone)]
@@ -100,33 +104,54 @@ pub struct Skills {
     survival: Skill,
 }
 
-macro_rules! skill {
-    ($a:expr) => {
-        Skill::new($a, false, false)
-    };
-}
+// macro_rules! skill {
+//     ($a:expr) => {
+//         Skill::new($a, false, false)
+//     };
+// }
+//
+// impl Default for Skills {
+//     fn default() -> Self {
+//         Skills {
+//             acrobatics: skill!(SkillType::Acrobatics),
+//             animal_handling: skill!(SkillType::AnimalHandling),
+//             arcana: skill!(SkillType::Arcana),
+//             athletics: skill!(SkillType::Athletics),
+//             deception: skill!(SkillType::Deception),
+//             history: skill!(SkillType::History),
+//             insight: skill!(SkillType::Insight),
+//             intimidation: skill!(SkillType::Intimidation),
+//             investigation: skill!(SkillType::Investigation),
+//             medicine: skill!(SkillType::Medicine),
+//             nature: skill!(SkillType::Nature),
+//             perception: skill!(SkillType::Perception),
+//             performance: skill!(SkillType::Performance),
+//             persuasion: skill!(SkillType::Persuasion),
+//             religion: skill!(SkillType::Religion),
+//             sleight_of_hand: skill!(SkillType::SleightOfHand),
+//             stealth: skill!(SkillType::Stealth),
+//             survival: skill!(SkillType::Survival),
+//         }
+//     }
+// }
 
-impl Default for Skills {
-    fn default() -> Self {
-        Skills {
-            acrobatics: skill!(SkillType::Acrobatics),
-            animal_handling: skill!(SkillType::AnimalHandling),
-            arcana: skill!(SkillType::Arcana),
-            athletics: skill!(SkillType::Athletics),
-            deception: skill!(SkillType::Deception),
-            history: skill!(SkillType::History),
-            insight: skill!(SkillType::Insight),
-            intimidation: skill!(SkillType::Intimidation),
-            investigation: skill!(SkillType::Investigation),
-            medicine: skill!(SkillType::Medicine),
-            nature: skill!(SkillType::Nature),
-            perception: skill!(SkillType::Perception),
-            performance: skill!(SkillType::Performance),
-            persuasion: skill!(SkillType::Persuasion),
-            religion: skill!(SkillType::Religion),
-            sleight_of_hand: skill!(SkillType::SleightOfHand),
-            stealth: skill!(SkillType::Stealth),
-            survival: skill!(SkillType::Survival),
-        }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_arc() {
+        let stats = Stats::default();
+        let dex = Arc::new(Mutex::new(stats.dexterity));
+
+        let acrobatics = Skill {
+            skill_type: SkillType::Acrobatics,
+            stat: dex,
+            proficiency: false,
+            expertise: false,
+            extra_bonus: 0,
+        };
+
+        acrobatics
     }
 }

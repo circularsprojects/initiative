@@ -34,12 +34,12 @@ pub enum StatType {
 
 #[derive(Debug, Clone)]
 pub struct Stats {
-    strength: Stat,
-    dexterity: Stat,
-    constitution: Stat,
-    intelligence: Stat,
-    wisdom: Stat,
-    charisma: Stat,
+    pub(crate) strength: Stat,
+    pub(crate) dexterity: Stat,
+    pub(crate) constitution: Stat,
+    pub(crate) intelligence: Stat,
+    pub(crate) wisdom: Stat,
+    pub(crate) charisma: Stat,
 }
 
 impl Default for Stats {
@@ -56,7 +56,7 @@ impl Default for Stats {
 }
 
 impl Stats {
-    pub fn to_skills(&self) -> Skills {
-        
-    }
+    // pub fn to_skills(&self) -> Skills {
+    //     
+    // }
 }
