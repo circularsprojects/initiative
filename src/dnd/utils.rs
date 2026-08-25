@@ -1,12 +1,13 @@
 use std::ops::Add;
 
-pub fn determine_stat_modifier(stat_score: i8) -> i8 {
+pub fn determine_stat_modifier(stat_score: i16) -> i16 {
     if stat_score <= 0 {
         panic!("Stat score must be greater than 0");
     }
     (stat_score - 10) >> 1
 }
 
+#[derive(Clone, Debug)]
 pub struct Number {
     // base is optional here
     // number is meant to be like an all encompassing struct for any sort of "number influenced by other things"
@@ -16,6 +17,7 @@ pub struct Number {
     pub factors: Vec<Factor>,
 }
 
+#[derive(Clone, Debug)]
 pub struct Factor {
     pub change: i16,
     pub description: String,
@@ -37,6 +39,7 @@ impl Factor {
     }
 }
 
+#[macro_export]
 macro_rules! number {
     ($a:expr) => {
         Number::new(Some($a as i16), vec![])

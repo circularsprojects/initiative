@@ -1,10 +1,9 @@
 use super::stats::{Stat, StatType, Stats};
 
 #[derive(Debug, Clone)]
-pub struct Skill<'a> {
+pub struct Skill {
     skill_type: SkillType,
-    // arc mutex
-    stat: &'a Stat,
+    stat_type: StatType,
     proficiency: bool,
     expertise: bool,
     extra_bonus: i8,
@@ -20,10 +19,6 @@ impl Skill {
             expertise,
             extra_bonus: 0,
         }
-    }
-
-    pub fn new_from_stat(skill_type: SkillType, stat: Stat) -> Skill {
-
     }
 }
 

@@ -25,4 +25,12 @@ impl Character {
     pub fn get_proficiency_bonus(&self) -> u8 {
         (self.level as f32 / 4.0).ceil() as u8 + 1
     }
+
+    pub fn get_stat_bonus(&self, stat_type: StatType) -> u8 {
+        
+    }
+
+    pub fn get_skill_bonus(&self, skill_type: SkillType) -> u8 {
+
+    }
 }
