@@ -22,15 +22,15 @@ pub struct Character {
 }
 
 impl Character {
-    pub fn get_proficiency_bonus(&self) -> u8 {
-        (self.level as f32 / 4.0).ceil() as u8 + 1
+    pub fn get_proficiency_bonus(&self) -> i16 {
+        (self.level as f32 / 4.0).ceil() as i16 + 1
     }
 
-    pub fn get_stat_bonus(&self, stat_type: StatType) -> u8 {
-        
+    pub fn get_stat_modifier(&self, stat: StatType) -> i16 {
+        self.stats.get_modifier(stat)
     }
 
-    pub fn get_skill_bonus(&self, skill_type: SkillType) -> u8 {
-
+    pub fn get_skill_modifier(&self, skill: SkillType) -> i16 {
+        self.skills.get(skill).get_modifier(&self.stats, self.get_proficiency_bonus())
     }
 }
