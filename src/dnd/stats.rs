@@ -1,8 +1,9 @@
+use strum_macros::EnumIter;
 use crate::dnd::skills::Skills;
 use crate::number;
 use super::utils::{determine_stat_modifier, Number};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, EnumIter)]
 pub enum StatType { Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma }
 
 #[derive(Debug, Clone)]
@@ -43,6 +44,15 @@ impl Stat {
         match self {
             Stat::Strength(n) | Stat::Dexterity(n) | Stat::Constitution(n)
             | Stat::Intelligence(n) | Stat::Wisdom(n) | Stat::Charisma(n) => n.get_value(),
+        }
+    }
+    
+    pub fn set_score(&mut self, new_score: i16) {
+        match self {
+            Stat::Strength(n) | Stat::Dexterity(n) | Stat::Constitution(n)
+            | Stat::Intelligence(n) | Stat::Wisdom(n) | Stat::Charisma(n) => {
+                n.base = Some(new_score);
+            }
         }
     }
 

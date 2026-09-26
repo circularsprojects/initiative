@@ -1,3 +1,4 @@
+use strum_macros::EnumIter;
 use super::stats::{Stat, StatType, Stats};
 
 #[derive(Debug, Clone)]
@@ -28,7 +29,7 @@ impl Skill {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, EnumIter)]
 pub enum SkillType {
     // could have these as an enum that has the value of a Skill
     // like enum Acrobatics is a Skill with stat type dex
