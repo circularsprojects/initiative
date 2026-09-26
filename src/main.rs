@@ -38,7 +38,7 @@ impl State {
             Message::SidesChanged(sides) => { self.sides_input = sides; }
             Message::AmountChanged(amount) => { self.amount_input = amount; }
             Message::StatChanged(value, stat) => {
-                self.stats.get(stat).set_score(value);
+                self.stats.set_score(stat, value);
             }
             Message::DiceRolled => {
                 if let Ok(sides) = self.sides_input.parse::<u16>() && let Ok(amount) = self.amount_input.parse::<u16>() {
@@ -55,7 +55,8 @@ impl State {
         let dice_column = self.dice_column();
         let stats_column = self.stats_column();
 
-        row![dice_column, stats_column]
+        // row![dice_column, stats_column]
+        row![stats_column]
     }
 
     fn dice_column(&self) -> Column<'_, Message> {
@@ -77,16 +78,13 @@ impl State {
             let score = self.stats.get(stat).score();
             let modifier = self.stats.get(stat).get_modifier();
             let input: TextInput<Message> = text_input("10", &score.to_string()).on_input(move |value: String| {
-                if let Ok(value) = value.parse::<i16>() {
-                    Message::StatChanged(value, stat)
-                } else {
-                    Message::StatChanged(10, stat)
-                }
+                let value = value.parse::<i16>().unwrap_or(10).clamp(1, 30);
+                Message::StatChanged(value, stat)
             });
             let row: Row<Message> = row![
                 text(format!("{:?}", stat)),
                 input,
-                text(format!("(modifer: {})", modifier))
+                text(format!("(modifier: {})", modifier))
             ];
             // column = column.push(text(format!("{:?}: {} (modifier: {})", stat, score, modifier)));
             column = column.push(row);

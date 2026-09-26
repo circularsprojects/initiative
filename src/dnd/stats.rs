@@ -46,7 +46,7 @@ impl Stat {
             | Stat::Intelligence(n) | Stat::Wisdom(n) | Stat::Charisma(n) => n.get_value(),
         }
     }
-    
+
     pub fn set_score(&mut self, new_score: i16) {
         match self {
             Stat::Strength(n) | Stat::Dexterity(n) | Stat::Constitution(n)
@@ -71,6 +71,21 @@ impl Stats {
             StatType::Wisdom => &self.wisdom,
             StatType::Charisma => &self.charisma,
         }
+    }
+
+    pub fn get_mut(&mut self, stat: StatType) -> &mut Stat {
+        match stat {
+            StatType::Strength => &mut self.strength,
+            StatType::Dexterity => &mut self.dexterity,
+            StatType::Constitution => &mut self.constitution,
+            StatType::Intelligence => &mut self.intelligence,
+            StatType::Wisdom => &mut self.wisdom,
+            StatType::Charisma => &mut self.charisma,
+        }
+    }
+
+    pub fn set_score(&mut self, stat: StatType, new_score: i16) {
+        self.get_mut(stat).set_score(new_score);
     }
 
     pub fn get_modifier(&self, stat: StatType) -> i16 {
