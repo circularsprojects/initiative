@@ -9,6 +9,12 @@ pub struct Dice {
     pub amount: u16,
 }
 
+#[derive(Debug, Clone)]
+pub enum Error {
+    InvalidFormat,
+    ParseError
+}
+
 impl Dice {
     pub fn new(amount: u16, sides: u16) -> Dice {
         Dice { sides, amount }
@@ -44,6 +50,20 @@ impl Add for Dice {
         dice.reverse();
 
         CompoundDice::from(dice)
+    }
+}
+
+impl TryFrom<String> for Dice {
+    type Error = Error;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        let split = value.split("d").collect::<Vec<&str>>();
+        if split.len() != 2 {
+            return Err(Error::InvalidFormat);
+        }
+        let amount = split[0].parse::<u16>().map_err(|_| Error::ParseError)?;
+        let sides = split[1].parse::<u16>().map_err(|_| Error::ParseError)?;
+        Ok(Dice::new(amount, sides))
     }
 }
 
@@ -129,5 +149,43 @@ mod tests {
 
         let cm5 = cm2 + cm3;
         assert_eq!(cm5.to_string(), "2d10 + 3d8 + 2d4 + 4d4");
+    }
+
+    #[test]
+    fn test_from_string() {
+        let d1 = Dice::try_from("4d6".to_string()).unwrap();
+        assert_eq!(d1.amount, 4);
+        assert_eq!(d1.sides, 6);
+
+        let d2 = Dice::try_from("2d12".to_string()).unwrap();
+        assert_eq!(d2.amount, 2);
+        assert_eq!(d2.sides, 12);
+
+        let d3 = Dice::try_from("10d20".to_string()).unwrap();
+        assert_eq!(d3.amount, 10);
+        assert_eq!(d3.sides, 20);
+
+        let d4 = Dice::try_from("3d8".to_string()).unwrap();
+        assert_eq!(d4.amount, 3);
+        assert_eq!(d4.sides, 8);
+
+        let d5 = Dice::try_from("5d10".to_string()).unwrap();
+        assert_eq!(d5.amount, 5);
+        assert_eq!(d5.sides, 10);
+
+        let fail1 = Dice::try_from("4d".to_string());
+        assert!(fail1.is_err());
+
+        let fail2 = Dice::try_from("d6".to_string());
+        assert!(fail2.is_err());
+
+        let fail3 = Dice::try_from("4d6d".to_string());
+        assert!(fail3.is_err());
+
+        let fail4 = Dice::try_from("4d6d8".to_string());
+        assert!(fail4.is_err());
+
+        let fail5 = Dice::try_from("4dd6".to_string());
+        assert!(fail5.is_err());
     }
 }
