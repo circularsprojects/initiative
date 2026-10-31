@@ -1,7 +1,7 @@
 mod dnd;
 pub mod ui;
 
-use iced::{Center, Fill};
+use iced::{Center};
 use iced::widget::{button, text, column, Column, text_input, row, Row, TextInput, container, Button, space};
 use strum::IntoEnumIterator;
 use crate::dnd::dice::Dice;
@@ -17,14 +17,18 @@ struct State {
     amount_input: String,
     dice_result: String,
     stats: dnd::stats::Stats,
+    edited_stat: Option<dnd::stats::StatType>,
+    edit_buffer: String,
 }
 
 #[derive(Debug, Clone)]
 enum Message {
     SidesChanged(String),
     AmountChanged(String),
-    StatChanged(i16, dnd::stats::StatType),
     DiceRolled,
+    EditStarted(dnd::stats::StatType),
+    EditChanged(String),
+    EditSubmitted,
 }
 
 impl State {
@@ -34,6 +38,8 @@ impl State {
             amount_input: "".parse().unwrap(),
             dice_result: "".parse().unwrap(),
             stats: dnd::stats::Stats::default(),
+            edited_stat: None,
+            edit_buffer: "".parse().unwrap(),
         }
     }
 
@@ -41,9 +47,6 @@ impl State {
         match message {
             Message::SidesChanged(sides) => { self.sides_input = sides; }
             Message::AmountChanged(amount) => { self.amount_input = amount; }
-            Message::StatChanged(value, stat) => {
-                self.stats.set_score(stat, value);
-            }
             Message::DiceRolled => {
                 if let Ok(sides) = self.sides_input.parse::<u16>() && let Ok(amount) = self.amount_input.parse::<u16>() {
                     let dice = Dice::new(amount, sides);
@@ -51,6 +54,20 @@ impl State {
                 } else {
                     self.dice_result = "invalid".to_string();
                 }
+            }
+            Message::EditStarted(stat) => {
+                self.edited_stat = Some(stat);
+                self.edit_buffer = self.stats.get(stat).score().to_string();
+            }
+            Message::EditChanged(value) => {
+                self.edit_buffer = value;
+            }
+            Message::EditSubmitted => {
+                if let Some(stat) = self.edited_stat && let Ok(value) = self.edit_buffer.parse::<i16>() && value > 0 {
+                    self.stats.set_score(stat, value);
+                }
+                self.edited_stat = None;
+                self.edit_buffer.clear();
             }
         }
     }
@@ -81,17 +98,19 @@ impl State {
         for stat in dnd::stats::StatType::iter() {
             let score = self.stats.get(stat).score();
             let modifier = self.stats.get(stat).get_modifier();
-            // let input: TextInput<Message> = text_input("10", &score.to_string()).on_input(move |value: String| {
-            //     let value = value.parse::<i16>().unwrap_or(10).clamp(1, 30);
-            //     Message::StatChanged(value, stat)
-            // });
-            let edit_button: Button<Message> = button(pen_line()).on_press(Message::StatChanged(10, stat)).style(button::text).padding(0);
-            let row: Row<Message> = row![
+
+            let mut row: Row<Message> = row![
                 text(format!("{:?} {} ({})", stat, modifier.prefix_display(), score)),
-                space().width(10),
-                edit_button,
+                space().width(10)
                 // text(format!("(modifier: {})", modifier))
             ].align_y(Center);
+            if self.edited_stat == Some(stat) {
+                let input: TextInput<Message> = text_input("10", &self.edit_buffer).on_input(Message::EditChanged).on_submit(Message::EditSubmitted);
+                row = row.push(input);
+            } else {
+                let edit_button: Button<Message> = button(pen_line()).on_press(Message::EditStarted(stat)).style(button::text).padding(0);
+                row = row.push(edit_button);
+            }
             // column = column.push(text(format!("{:?}: {} (modifier: {})", stat, score, modifier)));
             let container = container(row)
                 .padding(10)

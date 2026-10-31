@@ -26,6 +26,12 @@ pub struct Stats {
     charisma: Stat,
 }
 
+impl PartialEq for StatType {
+    fn eq(&self, other: &Self) -> bool {
+        std::mem::discriminant(self) == std::mem::discriminant(other)
+    }
+}
+
 impl Default for Stats {
     fn default() -> Self {
         Stats {
