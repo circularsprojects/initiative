@@ -29,7 +29,7 @@ pub struct Stats {
 impl Default for Stats {
     fn default() -> Self {
         Stats {
-            strength: Stat::Strength(number!(10)),
+            strength: Stat::Strength(number!(9)),
             dexterity: Stat::Dexterity(number!(10)),
             constitution: Stat::Constitution(number!(10)),
             intelligence: Stat::Intelligence(number!(10)),

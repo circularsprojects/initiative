@@ -23,6 +23,10 @@ pub struct Factor {
     pub description: String,
 }
 
+pub trait PrefixDisplay {
+    fn prefix_display(&self) -> String;
+}
+
 impl Number {
     pub fn new(base: Option<i16>, factors: Vec<Factor>) -> Number {
         Number { base, factors }
@@ -36,6 +40,16 @@ impl Number {
 impl Factor {
     pub fn new(change: i16, description: String) -> Factor {
         Factor { change, description }
+    }
+}
+
+impl PrefixDisplay for i16 {
+    fn prefix_display(&self) -> String {
+        if *self >= 0 {
+            format!("+{}", self)
+        } else {
+            format!("{}", self)
+        }
     }
 }
 

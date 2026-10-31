@@ -1,8 +1,12 @@
 mod dnd;
+pub mod ui;
 
-use iced::widget::{button, text, column, Column, text_input, row, Row, TextInput};
+use iced::{Center, Fill};
+use iced::widget::{button, text, column, Column, text_input, row, Row, TextInput, container, Button, space};
 use strum::IntoEnumIterator;
 use crate::dnd::dice::Dice;
+use crate::dnd::utils::PrefixDisplay;
+use crate::ui::icons::pen_line;
 
 pub fn main() -> iced::Result {
     iced::application(State::default, State::update, State::view).run()
@@ -77,17 +81,22 @@ impl State {
         for stat in dnd::stats::StatType::iter() {
             let score = self.stats.get(stat).score();
             let modifier = self.stats.get(stat).get_modifier();
-            let input: TextInput<Message> = text_input("10", &score.to_string()).on_input(move |value: String| {
-                let value = value.parse::<i16>().unwrap_or(10).clamp(1, 30);
-                Message::StatChanged(value, stat)
-            });
+            // let input: TextInput<Message> = text_input("10", &score.to_string()).on_input(move |value: String| {
+            //     let value = value.parse::<i16>().unwrap_or(10).clamp(1, 30);
+            //     Message::StatChanged(value, stat)
+            // });
+            let edit_button: Button<Message> = button(pen_line()).on_press(Message::StatChanged(10, stat)).style(button::text).padding(0);
             let row: Row<Message> = row![
-                text(format!("{:?}", stat)),
-                input,
-                text(format!("(modifier: {})", modifier))
-            ];
+                text(format!("{:?} {} ({})", stat, modifier.prefix_display(), score)),
+                space().width(10),
+                edit_button,
+                // text(format!("(modifier: {})", modifier))
+            ].align_y(Center);
             // column = column.push(text(format!("{:?}: {} (modifier: {})", stat, score, modifier)));
-            column = column.push(row);
+            let container = container(row)
+                .padding(10)
+                .style(container::bordered_box);
+            column = column.push(container);
         }
         column
     }

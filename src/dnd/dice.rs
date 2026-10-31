@@ -1,5 +1,5 @@
 use std::fmt::{Display, Formatter};
-use std::ops::Add;
+use std::ops::{Add, Mul};
 use rand::distr::Uniform;
 use rand::prelude::*;
 
@@ -50,6 +50,15 @@ impl Add for Dice {
         dice.reverse();
 
         CompoundDice::from(dice)
+    }
+}
+
+impl Mul<u16> for Dice {
+    type Output = Self;
+
+    fn mul(mut self, rhs: u16) -> Self::Output {
+        self.sides *= rhs;
+        self
     }
 }
 
