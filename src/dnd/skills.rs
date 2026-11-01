@@ -3,31 +3,41 @@ use strum_macros::EnumIter;
 use super::stats::{Stat, StatType, Stats};
 
 #[derive(Debug, Clone)]
+pub enum Proficiency {
+    Unskilled,
+    Half,
+    Proficient,
+    Expertise
+}
+
+#[derive(Debug, Clone)]
 pub struct Skill {
     // skill_type: SkillType,
     stat_type: StatType,
-    proficiency: bool,
-    expertise: bool,
+    proficiency: Proficiency,
     extra_bonus: i8,
 }
 
 impl Skill {
-    pub fn new(skill_type: SkillType, proficiency: bool, expertise: bool) -> Skill {
+    pub fn new(skill_type: SkillType, proficiency: Proficiency) -> Skill {
         let stat_type = skill_type.get_stat();
         Skill {
             // skill_type,
             stat_type,
             proficiency,
-            expertise,
             extra_bonus: 0,
         }
     }
 
     pub fn get_modifier(&self, stats: &Stats, proficiency_bonus: i16) -> i16 {
-        // TODO: need to implement half proficiency
         let stat_mod = stats.get_modifier(self.stat_type);
-        let prof_mult = if self.expertise { 2 } else if self.proficiency { 1 } else { 0 };
-        stat_mod + (proficiency_bonus * prof_mult) + self.extra_bonus as i16
+        let prof_mult: f64 = match self.proficiency {
+            Proficiency::Unskilled => 0.0,
+            Proficiency::Half => 0.5,
+            Proficiency::Proficient => 1.0,
+            Proficiency::Expertise => 2.0,
+        };
+        stat_mod + (proficiency_bonus as f64 * prof_mult).floor() as i16 + self.extra_bonus as i16 // casting like a boss. this code sucks. don't @ me.
     }
 }
 
@@ -117,7 +127,7 @@ pub struct Skills {
 
 macro_rules! skill {
     ($a:expr) => {
-        Skill::new($a, false, false)
+        Skill::new($a, Proficiency::Unskilled)
     };
 }
 
@@ -180,15 +190,17 @@ mod tests {
     fn test_skills() {
         let stats = get_test_stats();
         let mut skills = Skills::default();
-        skills.arcana.expertise = true;
-        skills.history.proficiency = true;
-        skills.insight.proficiency = true;
-        skills.investigation.proficiency = true;
-        skills.nature.proficiency = true;
-        skills.perception.proficiency = true;
-        skills.persuasion.proficiency = true;
-        skills.stealth.proficiency = true;
-        skills.survival.proficiency = true;
+        skills.arcana.proficiency = Proficiency::Expertise;
+        skills.history.proficiency = Proficiency::Proficient;
+        skills.insight.proficiency = Proficiency::Proficient;
+        skills.investigation.proficiency = Proficiency::Proficient;
+        skills.nature.proficiency = Proficiency::Proficient;
+        skills.perception.proficiency = Proficiency::Proficient;
+        skills.performance.proficiency = Proficiency::Half;
+        skills.persuasion.proficiency = Proficiency::Proficient;
+        skills.religion.proficiency = Proficiency::Half;
+        skills.stealth.proficiency = Proficiency::Proficient;
+        skills.survival.proficiency = Proficiency::Proficient;
         let proficiency_bonus = 2;
 
         assert_eq!(skills.acrobatics.get_modifier(&stats, proficiency_bonus), -1);
@@ -203,11 +215,36 @@ mod tests {
         assert_eq!(skills.medicine.get_modifier(&stats, proficiency_bonus), 2);
         assert_eq!(skills.nature.get_modifier(&stats, proficiency_bonus), 5);
         assert_eq!(skills.perception.get_modifier(&stats, proficiency_bonus), 4);
-        assert_eq!(skills.performance.get_modifier(&stats, proficiency_bonus), 0);
+        assert_eq!(skills.performance.get_modifier(&stats, proficiency_bonus), 1);
         assert_eq!(skills.persuasion.get_modifier(&stats, proficiency_bonus), 2);
-        assert_eq!(skills.religion.get_modifier(&stats, proficiency_bonus), 3);
+        assert_eq!(skills.religion.get_modifier(&stats, proficiency_bonus), 4);
         assert_eq!(skills.sleight_of_hand.get_modifier(&stats, proficiency_bonus), -1);
         assert_eq!(skills.stealth.get_modifier(&stats, proficiency_bonus), 1);
         assert_eq!(skills.survival.get_modifier(&stats, proficiency_bonus), 4);
+    }
+
+    #[test]
+    fn test_rounding() {
+        let stats = get_test_stats();
+        let mut skills = Skills::default();
+        skills.arcana.proficiency = Proficiency::Half;
+        skills.insight.proficiency = Proficiency::Half;
+        skills.nature.proficiency = Proficiency::Half;
+        skills.survival.proficiency = Proficiency::Half;
+
+        assert_eq!(skills.arcana.get_modifier(&stats, 3), 4);
+        assert_eq!(skills.insight.get_modifier(&stats, 3), 3);
+        assert_eq!(skills.nature.get_modifier(&stats, 3), 4);
+        assert_eq!(skills.survival.get_modifier(&stats, 3), 3);
+
+        assert_eq!(skills.arcana.get_modifier(&stats, 4), 5);
+        assert_eq!(skills.insight.get_modifier(&stats, 4), 4);
+        assert_eq!(skills.nature.get_modifier(&stats, 4), 5);
+        assert_eq!(skills.survival.get_modifier(&stats, 4), 4);
+
+        assert_eq!(skills.arcana.get_modifier(&stats, 5), 5);
+        assert_eq!(skills.insight.get_modifier(&stats, 5), 4);
+        assert_eq!(skills.nature.get_modifier(&stats, 5), 5);
+        assert_eq!(skills.survival.get_modifier(&stats, 5), 4);
     }
 }
