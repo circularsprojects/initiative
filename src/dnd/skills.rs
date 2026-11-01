@@ -24,6 +24,7 @@ impl Skill {
     }
 
     pub fn get_modifier(&self, stats: &Stats, proficiency_bonus: i16) -> i16 {
+        // TODO: need to implement half proficiency
         let stat_mod = stats.get_modifier(self.stat_type);
         let prof_mult = if self.expertise { 2 } else if self.proficiency { 1 } else { 0 };
         stat_mod + (proficiency_bonus * prof_mult) + self.extra_bonus as i16
