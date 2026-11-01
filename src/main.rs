@@ -5,7 +5,9 @@ use iced::{Center, Fill, Shrink};
 use iced::widget::{button, text, column, Column, text_input, row, Row, TextInput, container, Button, space};
 use strum::IntoEnumIterator;
 use crate::dnd::dice::Dice;
+use crate::dnd::prelude::Proficiency;
 use crate::dnd::utils::PrefixDisplay;
+use crate::ui::icons::{expertise, half, proficient, unskilled};
 
 pub fn main() -> iced::Result {
     iced::application(State::default, State::update, State::view).run()
@@ -29,6 +31,7 @@ enum Message {
     EditStarted(dnd::stats::StatType),
     EditChanged(String),
     EditSubmitted,
+    ProficiencyChanged(dnd::skills::SkillType),
 }
 
 impl State {
@@ -69,6 +72,17 @@ impl State {
                 }
                 self.edited_stat = None;
                 self.edit_buffer.clear();
+            }
+            Message::ProficiencyChanged(skill_type) => {
+                let skill = self.skills.get(skill_type);
+                let current_proficiency = skill.get_proficiency();
+                let new_proficiency = match current_proficiency {
+                    Proficiency::Unskilled => Proficiency::Half,
+                    Proficiency::Half => Proficiency::Proficient,
+                    Proficiency::Proficient => Proficiency::Expertise,
+                    Proficiency::Expertise => Proficiency::Unskilled,
+                };
+                self.skills.set_proficiency(skill_type, new_proficiency);
             }
         }
     }
@@ -127,8 +141,17 @@ impl State {
         let mut column = column![];
         for skill in dnd::skills::SkillType::iter() {
             let modifier = self.skills.get(skill).get_modifier(&self.stats, 2);
+            let proficiency_icon = match self.skills.get(skill).get_proficiency() {
+                Proficiency::Unskilled => unskilled(),
+                Proficiency::Half => half(),
+                Proficiency::Proficient => proficient(),
+                Proficiency::Expertise => expertise(),
+            };
 
+            let proficiency_button = button(proficiency_icon).on_press(Message::ProficiencyChanged(skill)).style(button::text).padding(2);
             let row: Row<Message> = row![
+                proficiency_button,
+                space().width(3),
                 text(format!("{} {}", skill, modifier.prefix_display()))
             ].align_y(Center);
             let container = container(row)

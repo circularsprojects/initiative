@@ -39,6 +39,14 @@ impl Skill {
         };
         stat_mod + (proficiency_bonus as f64 * prof_mult).floor() as i16 + self.extra_bonus as i16 // casting like a boss. this code sucks. don't @ me.
     }
+    
+    pub fn get_proficiency(&self) -> &Proficiency {
+        &self.proficiency
+    }
+    
+    pub fn set_proficiency(&mut self, proficiency: Proficiency) {
+        self.proficiency = proficiency;
+    }
 }
 
 #[derive(Debug, Clone, Copy, EnumIter)]
@@ -178,6 +186,33 @@ impl Skills {
             SkillType::Stealth => &self.stealth,
             SkillType::Survival => &self.survival,
         }
+    }
+
+    pub fn get_mut(&mut self, skill: SkillType) -> &mut Skill {
+        match skill {
+            SkillType::Acrobatics => &mut self.acrobatics,
+            SkillType::AnimalHandling => &mut self.animal_handling,
+            SkillType::Arcana => &mut self.arcana,
+            SkillType::Athletics => &mut self.athletics,
+            SkillType::Deception => &mut self.deception,
+            SkillType::History => &mut self.history,
+            SkillType::Insight => &mut self.insight,
+            SkillType::Intimidation => &mut self.intimidation,
+            SkillType::Investigation => &mut self.investigation,
+            SkillType::Medicine => &mut self.medicine,
+            SkillType::Nature => &mut self.nature,
+            SkillType::Perception => &mut self.perception,
+            SkillType::Performance => &mut self.performance,
+            SkillType::Persuasion => &mut self.persuasion,
+            SkillType::Religion => &mut self.religion,
+            SkillType::SleightOfHand => &mut self.sleight_of_hand,
+            SkillType::Stealth => &mut self.stealth,
+            SkillType::Survival => &mut self.survival,
+        }
+    }
+    
+    pub fn set_proficiency(&mut self, skill: SkillType, proficiency: Proficiency) {
+        self.get_mut(skill).set_proficiency(proficiency);
     }
 }
 
