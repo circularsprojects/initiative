@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use strum_macros::EnumIter;
 use super::stats::{Stat, StatType, Stats};
 
@@ -76,6 +77,17 @@ impl SkillType {
             SkillType::SleightOfHand => StatType::Dexterity,
             SkillType::Stealth => StatType::Dexterity,
             SkillType::Survival => StatType::Wisdom,
+        }
+    }
+}
+
+impl Display for SkillType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        // only need overrides for these two, the rest are fine as is :shrug:
+        match self {
+            SkillType::AnimalHandling => write!(f, "Animal Handling"),
+            SkillType::SleightOfHand => write!(f, "Sleight of Hand"),
+            _ => write!(f, "{:?}", self),
         }
     }
 }

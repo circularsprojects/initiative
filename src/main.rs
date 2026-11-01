@@ -102,7 +102,7 @@ impl State {
             let modifier = self.stats.get(stat).get_modifier();
 
             let mut row: Row<Message> = row![
-                text(format!("{:?} {}", stat, modifier.prefix_display())),
+                text(format!("{} {}", stat, modifier.prefix_display())),
                 space().width(5)
                 // text(format!("(modifier: {})", modifier))
             ].align_y(Center);
@@ -129,7 +129,7 @@ impl State {
             let modifier = self.skills.get(skill).get_modifier(&self.stats, 2);
 
             let row: Row<Message> = row![
-                text(format!("{:?} {}", skill, modifier.prefix_display()))
+                text(format!("{} {}", skill, modifier.prefix_display()))
             ].align_y(Center);
             let container = container(row)
                 .padding(10)

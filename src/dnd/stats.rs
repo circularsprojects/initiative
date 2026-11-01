@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use strum_macros::EnumIter;
 use crate::dnd::skills::Skills;
 use crate::number;
@@ -29,6 +30,13 @@ pub struct Stats {
 impl PartialEq for StatType {
     fn eq(&self, other: &Self) -> bool {
         std::mem::discriminant(self) == std::mem::discriminant(other)
+    }
+}
+
+impl Display for StatType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        // no overrides are needed
+        write!(f, "{:?}", self)
     }
 }
 
