@@ -35,7 +35,7 @@ impl PartialEq for StatType {
 impl Default for Stats {
     fn default() -> Self {
         Stats {
-            strength: Stat::Strength(number!(9)),
+            strength: Stat::Strength(number!(10)),
             dexterity: Stat::Dexterity(number!(10)),
             constitution: Stat::Constitution(number!(10)),
             intelligence: Stat::Intelligence(number!(10)),

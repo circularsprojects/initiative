@@ -29,7 +29,7 @@ impl Skill {
     }
 }
 
-#[derive(Debug, Clone, EnumIter)]
+#[derive(Debug, Clone, Copy, EnumIter)]
 pub enum SkillType {
     // could have these as an enum that has the value of a Skill
     // like enum Acrobatics is a Skill with stat type dex

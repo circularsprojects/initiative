@@ -1,12 +1,11 @@
 mod dnd;
 pub mod ui;
 
-use iced::{Center};
+use iced::{Center, Fill, Shrink};
 use iced::widget::{button, text, column, Column, text_input, row, Row, TextInput, container, Button, space};
 use strum::IntoEnumIterator;
 use crate::dnd::dice::Dice;
 use crate::dnd::utils::PrefixDisplay;
-use crate::ui::icons::pen_line;
 
 pub fn main() -> iced::Result {
     iced::application(State::default, State::update, State::view).run()
@@ -17,6 +16,7 @@ struct State {
     amount_input: String,
     dice_result: String,
     stats: dnd::stats::Stats,
+    skills: dnd::skills::Skills,
     edited_stat: Option<dnd::stats::StatType>,
     edit_buffer: String,
 }
@@ -38,6 +38,7 @@ impl State {
             amount_input: "".parse().unwrap(),
             dice_result: "".parse().unwrap(),
             stats: dnd::stats::Stats::default(),
+            skills: dnd::skills::Skills::default(),
             edited_stat: None,
             edit_buffer: "".parse().unwrap(),
         }
@@ -75,9 +76,10 @@ impl State {
     fn view(&self) -> Row<'_, Message> {
         let dice_column = self.dice_column();
         let stats_column = self.stats_column();
+        let skills_column = self.skills_column();
 
         // row![dice_column, stats_column]
-        row![stats_column]
+        row![stats_column, skills_column]
     }
 
     fn dice_column(&self) -> Column<'_, Message> {
@@ -100,23 +102,41 @@ impl State {
             let modifier = self.stats.get(stat).get_modifier();
 
             let mut row: Row<Message> = row![
-                text(format!("{:?} {} ({})", stat, modifier.prefix_display(), score)),
-                space().width(10)
+                text(format!("{:?} {}", stat, modifier.prefix_display())),
+                space().width(5)
                 // text(format!("(modifier: {})", modifier))
             ].align_y(Center);
             if self.edited_stat == Some(stat) {
-                let input: TextInput<Message> = text_input("10", &self.edit_buffer).on_input(Message::EditChanged).on_submit(Message::EditSubmitted);
+                let input: TextInput<Message> = text_input("10", &self.edit_buffer).on_input(Message::EditChanged).on_submit(Message::EditSubmitted).width(100);
                 row = row.push(input);
             } else {
-                let edit_button: Button<Message> = button(pen_line()).on_press(Message::EditStarted(stat)).style(button::text).padding(0);
-                row = row.push(edit_button);
+                let score: Button<Message> = button(text(format!("({})", score))).on_press(Message::EditStarted(stat)).style(button::subtle).padding(5);
+                row = row.push(score);
             }
             // column = column.push(text(format!("{:?}: {} (modifier: {})", stat, score, modifier)));
             let container = container(row)
                 .padding(10)
+                .width(Fill)
                 .style(container::bordered_box);
             column = column.push(container);
         }
-        column
+        column.width(300)
+    }
+
+    fn skills_column(&self) -> Column<'_, Message> {
+        let mut column = column![];
+        for skill in dnd::skills::SkillType::iter() {
+            let modifier = self.skills.get(skill).get_modifier(&self.stats, 2);
+
+            let row: Row<Message> = row![
+                text(format!("{:?} {}", skill, modifier.prefix_display()))
+            ].align_y(Center);
+            let container = container(row)
+                .padding(10)
+                .width(Fill)
+                .style(container::bordered_box);
+            column = column.push(container);
+        }
+        column.width(300)
     }
 }
