@@ -1,7 +1,7 @@
 mod dnd;
 pub mod ui;
 
-use iced::{Center, Fill, Shrink};
+use iced::{Center, Fill, Font, Shrink};
 use iced::widget::{button, text, column, Column, text_input, row, Row, TextInput, container, Button, space};
 use strum::IntoEnumIterator;
 use crate::dnd::dice::Dice;
@@ -10,7 +10,11 @@ use crate::dnd::utils::PrefixDisplay;
 use crate::ui::icons::{expertise, half, proficient, unskilled};
 
 pub fn main() -> iced::Result {
-    iced::application(State::default, State::update, State::view).run()
+    let font: Font = Font::with_name("Outfit");
+    iced::application(State::default, State::update, State::view)
+        .font(include_bytes!("ui/assets/Outfit-Regular.ttf"))
+        .default_font(font)
+        .run()
 }
 
 struct State {
