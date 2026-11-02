@@ -152,7 +152,7 @@ impl State {
                 Proficiency::Expertise => expertise(),
             };
 
-            let proficiency_button = button(proficiency_icon).on_press(Message::ProficiencyChanged(skill)).style(button::text).padding(2);
+            let proficiency_button = button(proficiency_icon).on_press(Message::ProficiencyChanged(skill)).style(button::subtle).padding(2);
             let row: Row<Message> = row![
                 proficiency_button,
                 space().width(3),
